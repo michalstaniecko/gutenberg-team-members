@@ -4,8 +4,8 @@
 	"name": "blocks-course/team-members",
 	"version": "0.1.0",
 	"title": "Team members",
-	"category": "widgets",
-	"icon": "smiley",
+	"category": "media",
+	"icon": "groups",
 	"description": "Team members block.",
 	"supports": {
 		"html": false

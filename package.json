@@ -23,6 +23,7 @@
 		"*.scss": "npx stylelint --fix"
 	},
 	"devDependencies": {
+		"@wordpress/block-editor": "^12.4.0",
 		"@wordpress/eslint-plugin": "^14.8.0",
 		"@wordpress/prettier-config": "^2.19.0",
 		"@wordpress/scripts": "^26.6.0",
