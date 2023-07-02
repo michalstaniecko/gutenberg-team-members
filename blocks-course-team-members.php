@@ -20,9 +20,9 @@
  *
  * @see https://developer.wordpress.org/reference/functions/register_block_type/
  */
-function create_block_blocks_course_team_members_block_init()
+function blocks_course_team_members_block_init()
 {
 	register_block_type(__DIR__ . '/build');
 }
 
-add_action('init', 'create_block_blocks_course_team_members_block_init');
+add_action('init', 'blocks_course_team_members_block_init');
