@@ -5,14 +5,10 @@
 	grid-column-gap: 20px;
 	grid-row-gap: 20px;
 
-	@media (min-width: 992px) {
-		grid-template-columns: repeat(3, 1fr);
-	}
-
 	@for $i from 1 through 12 {
 
 		@media (min-width: 992px) {
-			&.has-#{$i}-columns {
+			&.has-#{$i}-columns:not(.block-editor-block-list__block) {
 				grid-template-columns: repeat($i, 1fr);
 			}
 		}
