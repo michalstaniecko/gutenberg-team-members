@@ -23,6 +23,23 @@ registerBlockType( 'blocks-course/team-member', {
 			source: 'html',
 			selector: 'p',
 		},
+		id: {
+			type: 'number',
+		},
+		alt: {
+			type: 'string',
+			source: 'attribute',
+			selector: 'img',
+			attribute: 'alt',
+			default: '',
+		},
+		url: {
+			type: 'string',
+			source: 'attribute',
+			attribute: 'src',
+			selector: 'img',
+			default: '',
+		},
 	},
 	edit: Edit,
 	save: Save,
