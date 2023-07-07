@@ -32,6 +32,31 @@
 		align-items: center;
 		justify-content: center;
 	}
+
+	[data-type="blocks-course/team-member"] {
+		margin: 0;
+
+		h4 {
+			color: #222;
+			font-size: 22px;
+			font-weight: 700;
+			margin: 0;
+		}
+
+		p {
+			color: #565656;
+			font-size: 16px;
+			font-weight: 300;
+			margin-bottom: 0;
+			margin-top: 10px;
+		}
+
+		.block-editor-media-placeholder,
+		img {
+			margin: 0 0 20px;
+		}
+
+	}
 }
 
 .wp-block-blocks-course-team-member-img {
@@ -51,4 +76,5 @@
 		transform: translate(-50%, -50%);
 		z-index: 10;
 	}
+
 }
