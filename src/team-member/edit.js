@@ -1,5 +1,6 @@
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { useSelect } from '@wordpress/data';
 import {
 	useBlockProps,
 	RichText,
@@ -7,6 +8,7 @@ import {
 	BlockControls,
 	MediaReplaceFlow,
 	InspectorControls,
+	store as blockEditorStore,
 } from '@wordpress/block-editor';
 import { isBlobURL, revokeBlobURL } from '@wordpress/blob';
 import {
@@ -15,12 +17,50 @@ import {
 	ToolbarButton,
 	PanelBody,
 	TextareaControl,
+	SelectControl,
 } from '@wordpress/components';
 
 function Edit( { attributes, setAttributes, noticeOperations, noticeUI } ) {
 	const { name, bio, url, alt, id } = attributes;
 
 	const [ blobURL, setBlobURL ] = useState();
+
+	const imageObject = useSelect(
+		( select ) => {
+			const { getMedia } = select( 'core' );
+			return id ? getMedia( id ) : null;
+		},
+		[ id ]
+	);
+
+	const imageSizes = useSelect( ( select ) => {
+		return select( blockEditorStore ).getSettings().imageSizes;
+	}, [] );
+
+	const getImageSizeOptions = () => {
+		if ( ! imageObject ) return [];
+
+		const { sizes } = imageObject.media_details;
+
+		const options = Object.keys( sizes )
+			.map( ( sizeSlug ) => {
+				const imageSize = imageSizes.find(
+					( { slug } ) => slug === sizeSlug
+				);
+				if ( ! imageSize ) return [];
+				return [
+					{
+						label: imageSize.name,
+						value: sizes[ sizeSlug ].source_url,
+					},
+				];
+			} )
+			.flat();
+
+		return options;
+	};
+
+	getImageSizeOptions();
 
 	const onChangeName = ( newName ) => {
 		setAttributes( { name: newName } );
@@ -64,6 +104,10 @@ function Edit( { attributes, setAttributes, noticeOperations, noticeUI } ) {
 		} );
 	};
 
+	const onChangeSize = ( newUrl ) => {
+		setAttributes( { url: newUrl } );
+	};
+
 	useEffect( () => {
 		if ( ! id && isBlobURL( url ) ) {
 			setAttributes( {
@@ -86,6 +130,14 @@ function Edit( { attributes, setAttributes, noticeOperations, noticeUI } ) {
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Image settings', 'team-members' ) }>
+					{ id && (
+						<SelectControl
+							label={ __( 'Image size', 'team-members' ) }
+							options={ getImageSizeOptions() }
+							value={ url }
+							onChange={ onChangeSize }
+						/>
+					) }
 					{ url && ! isBlobURL( url ) && (
 						<TextareaControl
 							help={ __(
