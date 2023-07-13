@@ -1,4 +1,4 @@
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useState, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import {
@@ -10,6 +10,7 @@ import {
 	InspectorControls,
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
+import { usePrevious } from '@wordpress/compose';
 import { isBlobURL, revokeBlobURL } from '@wordpress/blob';
 import {
 	Spinner,
@@ -24,6 +25,10 @@ function Edit( { attributes, setAttributes, noticeOperations, noticeUI } ) {
 	const { name, bio, url, alt, id } = attributes;
 
 	const [ blobURL, setBlobURL ] = useState();
+
+	const prevUrl = usePrevious( url );
+
+	const titleRef = useRef();
 
 	const imageObject = useSelect(
 		( select ) => {
@@ -126,6 +131,10 @@ function Edit( { attributes, setAttributes, noticeOperations, noticeUI } ) {
 		}
 	}, [ url ] );
 
+	useEffect( () => {
+		if ( url && ! prevUrl ) titleRef.current.focus();
+	}, [ url, prevUrl ] );
+
 	return (
 		<>
 			<InspectorControls>
@@ -190,6 +199,7 @@ function Edit( { attributes, setAttributes, noticeOperations, noticeUI } ) {
 					notices={ noticeUI }
 				/>
 				<RichText
+					ref={ titleRef }
 					placeholder={ __( 'Member name', 'team-members' ) }
 					tagName={ 'h4' }
 					onChange={ onChangeName }
