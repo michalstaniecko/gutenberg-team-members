@@ -8,7 +8,10 @@
 	"icon": "groups",
 	"description": "Team members block.",
 	"supports": {
-		"html": false
+		"html": false,
+		"align": [
+			"wide"
+		]
 	},
 	"textdomain": "bc-team-members",
 	"editorScript": "file:./index.js",
