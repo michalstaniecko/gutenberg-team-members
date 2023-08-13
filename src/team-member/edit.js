@@ -24,16 +24,20 @@ import {
 	TextControl,
 	Button,
 } from '@wordpress/components';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
 	DndContext,
 	useSensor,
 	useSensors,
 	PointerSensor,
 } from '@dnd-kit/core';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
 	SortableContext,
-	verticalListSortingStrategy,
+	horizontalListSortingStrategy,
+	arrayMove,
 } from '@dnd-kit/sortable';
+import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
 import SortableItem from './sortable-item';
 
 function Edit( {
@@ -51,7 +55,13 @@ function Edit( {
 	const prevUrl = usePrevious( url );
 	const prevIsSelected = usePrevious( isSelected );
 
-	const sensors = useSensors( useSensor( PointerSensor ) );
+	const sensors = useSensors(
+		useSensor( PointerSensor, {
+			activationConstraint: {
+				distance: 5,
+			},
+		} )
+	);
 
 	const titleRef = useRef();
 
@@ -169,8 +179,24 @@ function Edit( {
 		setSelectedLink();
 	};
 
-	const handleDragEnd = (/*event*/) => {
-		//console.log( event );
+	const handleDragEnd = ( event ) => {
+		const { active, over } = event;
+
+		if ( ! over || ! active ) return;
+
+		if ( active.id === over.id ) return;
+
+		const oldIndex = socialLinks.findIndex(
+			( item ) => active.id === `${ item.icon }-${ item.link }`
+		);
+		const newIndex = socialLinks.findIndex(
+			( item ) => over.id === `${ item.icon }-${ item.link }`
+		);
+
+		setAttributes( {
+			socialLinks: arrayMove( socialLinks, oldIndex, newIndex ),
+		} );
+		setSelectedLink( newIndex );
 	};
 
 	useEffect( () => {
@@ -284,46 +310,30 @@ function Edit( {
 						'wp-block-blocks-course-team-member-social-links'
 					}
 				>
-					<DndContext sensors={ sensors } onDragEnd={ handleDragEnd }>
-						<SortableContext
-							items={ socialLinks.map(
-								( item ) => `${ item.icon }-${ item.link }`
-							) }
-							strategy={ verticalListSortingStrategy }
-						>
-							{ socialLinks.map( ( item ) => (
-								<SortableItem
-									id={ `${ item.icon }-${ item.link }` }
-									key={ `${ item.icon }-${ item.link }` }
-								/>
-							) ) }
-						</SortableContext>
-					</DndContext>
 					<ul>
-						{ socialLinks.map( ( item, index ) => {
-							return (
-								<li
-									key={ index }
-									className={
-										selectedLink === index
-											? 'is-selected'
-											: ''
-									}
-								>
-									<button
-										aria-label={ __(
-											'Edit social link',
-											'team-members'
-										) }
-										onClick={ () =>
-											setSelectedLink( index )
-										}
-									>
-										<Icon icon={ item.icon } />
-									</button>
-								</li>
-							);
-						} ) }
+						<DndContext
+							sensors={ sensors }
+							onDragEnd={ handleDragEnd }
+							modifiers={ [ restrictToHorizontalAxis ] }
+						>
+							<SortableContext
+								items={ socialLinks.map(
+									( item ) => `${ item.icon }-${ item.link }`
+								) }
+								strategy={ horizontalListSortingStrategy }
+							>
+								{ socialLinks.map( ( item, index ) => (
+									<SortableItem
+										id={ `${ item.icon }-${ item.link }` }
+										key={ `${ item.icon }-${ item.link }` }
+										index={ index }
+										selectedLink={ selectedLink }
+										setSelectedLink={ setSelectedLink }
+										icon={ item.icon }
+									/>
+								) ) }
+							</SortableContext>
+						</DndContext>
 						{ isSelected && (
 							<li
 								className={
