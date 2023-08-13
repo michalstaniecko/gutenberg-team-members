@@ -33,8 +33,10 @@ function Edit( {
 	const { name, bio, url, alt, id, socialLinks } = attributes;
 
 	const [ blobURL, setBlobURL ] = useState();
+	const [ selectedLink, setSelectedLink ] = useState();
 
 	const prevUrl = usePrevious( url );
+	const prevIsSelected = usePrevious( isSelected );
 
 	const titleRef = useRef();
 
@@ -143,6 +145,12 @@ function Edit( {
 		if ( url && ! prevUrl ) titleRef.current.focus();
 	}, [ url, prevUrl ] );
 
+	useEffect( () => {
+		if ( prevIsSelected && ! isSelected ) {
+			setSelectedLink();
+		}
+	}, [ isSelected, prevIsSelected ] );
+
 	return (
 		<>
 			<InspectorControls>
@@ -229,8 +237,25 @@ function Edit( {
 					<ul>
 						{ socialLinks.map( ( item, index ) => {
 							return (
-								<li key={ index }>
-									<Icon icon={ item.icon } />
+								<li
+									key={ index }
+									className={
+										selectedLink === index
+											? 'is-selected'
+											: ''
+									}
+								>
+									<button
+										aria-label={ __(
+											'Edit social link',
+											'team-members'
+										) }
+										onClick={ () =>
+											setSelectedLink( index )
+										}
+									>
+										<Icon icon={ item.icon } />
+									</button>
 								</li>
 							);
 						} ) }
