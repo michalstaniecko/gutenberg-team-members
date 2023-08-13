@@ -19,10 +19,18 @@ import {
 	PanelBody,
 	TextareaControl,
 	SelectControl,
+	Icon,
+	Tooltip,
 } from '@wordpress/components';
 
-function Edit( { attributes, setAttributes, noticeOperations, noticeUI } ) {
-	const { name, bio, url, alt, id } = attributes;
+function Edit( {
+	attributes,
+	setAttributes,
+	noticeOperations,
+	noticeUI,
+	isSelected,
+} ) {
+	const { name, bio, url, alt, id, socialLinks } = attributes;
 
 	const [ blobURL, setBlobURL ] = useState();
 
@@ -213,6 +221,44 @@ function Edit( { attributes, setAttributes, noticeOperations, noticeUI } ) {
 					value={ bio }
 					allowedFormats={ [] }
 				/>
+				<div
+					className={
+						'wp-block-blocks-course-team-member-social-links'
+					}
+				>
+					<ul>
+						{ socialLinks.map( ( item, index ) => {
+							return (
+								<li key={ index }>
+									<Icon icon={ item.icon } />
+								</li>
+							);
+						} ) }
+						{ isSelected && (
+							<li
+								className={
+									'wp-block-blocks-course-team-member-add-icon'
+								}
+							>
+								<Tooltip
+									text={ __(
+										'Add social link',
+										'team-members'
+									) }
+								>
+									<button
+										aria-label={ __(
+											'Add social link',
+											'team-members'
+										) }
+									>
+										<Icon icon={ 'plus' } />
+									</button>
+								</Tooltip>
+							</li>
+						) }
+					</ul>
+				</div>
 			</div>
 		</>
 	);
